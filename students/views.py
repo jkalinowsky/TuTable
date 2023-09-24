@@ -3,19 +3,23 @@ from django.shortcuts import render
 from django.urls import reverse
 
 from .models import Student, Lesson
-from .forms import StudentForm
+from .forms import StudentForm, LessonForm
 
 def index(request):
     students = Student.objects.all()
     latest_lessons = []
 
+    students_with_empty_lessons = Student.objects.filter(lessons__isnull=True)
+
     for student in students:
-        latest_lesson = student.lessons.latest('date')
-        latest_lessons.append(latest_lesson)
+        if student.lessons.exists():
+            latest_lesson = student.lessons.latest('date')
+            latest_lessons.append(latest_lesson)
 
     students_and_lessons = zip(students, latest_lessons)
     return render(request, 'students/index.html', {
         'students_and_lessons': students_and_lessons,
+        'students_no_lessons': students_with_empty_lessons,
     })
 
 def view_student(request, id):
@@ -74,3 +78,19 @@ def delete(request, id):
         student = Student.objects.get(pk=id)
         student.delete()
     return HttpResponseRedirect(reverse('index'))
+
+def addLesson(request, id):
+    student = Student.objects.get(pk=id)
+    form = LessonForm(request.POST)
+
+    if request.method == 'POST':
+        if form.is_valid():
+            subject = form.cleaned_data['subject']
+            date = form.cleaned_data['date']
+            paid = form.cleaned_data['paid']
+            lesson = Lesson.objects.create(subject=subject, date=date, paid=paid)
+            student.lessons.add(lesson)
+            return HttpResponseRedirect(reverse('index'))
+
+    return render(request, 'students/add_lesson.html', {'form': form, 'student': student})
+
