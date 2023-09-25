@@ -23,6 +23,7 @@
                           </tr>
                         </thead>
                         <tbody>
+                            <!-- STUDENTS WITH ADDED LESSONS -->
                              {% for student, latest_lesson in students_and_lessons %}
                                 <tr>
                                     <td>{{ student.student_number }}</td>
@@ -39,7 +40,7 @@
 
                                         <!-- Modal - View Student -->
                                         <div class="modal" id="myModal{{student.id}}" tabindex="-1" aria-labelledby="MyModalLabel1"  aria-hidden="true">
-                                            <div class="modal-dialog" role="document">
+                                            <div class="modal-dialog modal-lg" role="document">
                                               <div class="modal-content">
                                                 <div class="modal-header">
                                                   <h5 class="modal-title">Student: {{ student.first_name }} {{ student.last_name }}</h5>
@@ -54,16 +55,44 @@
                                                     <li>Last Name: <strong>{{ student.last_name }}</strong></li>
                                                     <li>Telephone Number: <strong>{{ student.telephone_number }}</strong></li>
                                                     <li>Tutoring Subject: <strong>{{ student.tutor_subject }}</strong></li>
-                                                    <li>All Subjects Of Lessons: <strong>
-                                                        {% for lesson in student.lessons.all %}
-                                                          </br>{{ lesson.subject }} : {{ lesson.date }} : Payment Status
-                                                          {%if lesson.paid == True%}
-                                                            <i class="fa-solid fa-check fa-lg"></i>
-                                                          {% else %}
-                                                            <i class="fa-solid fa-xmark fa-lg"></i>
-                                                          {% endif %}
-                                                        {% endfor %}
-                                                    </strong></li>
+                                                    <li>All lessons: <strong>
+                                                      <table class="table">
+                                                        <thead>
+                                                          <tr class="text-center">
+                                                            <th scope="col">Subject</th>
+                                                            <th scope="col">Date</th>
+                                                            <th scope="col">Payment Status</th>
+                                                            <th scope="col">Actions</th>
+                                                          </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                          {% for lesson in student.lessons.all|dictsort:"date" %}
+                                                            <tr>
+                                                              <th scope="row">{{lesson.subject}}</th>
+                                                              <td class="text-center">{{lesson.date}}</td>
+                                                              <td class="text-center">
+                                                                {%if lesson.paid == True%}
+                                                                  <i class="fa-solid fa-check fa-lg"></i>
+                                                                {% else %}
+                                                                  <i class="fa-solid fa-xmark fa-lg"></i>
+                                                                {% endif %}
+                                                              </td>
+                                                              <td class='text-center d-flex justify-content-center'>
+                                                                <a class="btn btn-warning me-1" href="{% url 'edit_lesson' student.id lesson.id %}">
+                                                                  <i class="fa-solid fa-pen-to-square fa-lg" style="color: #ffffff;"></i>
+                                                                </a>
+                                                                <form action="{% url 'delete_lesson' lesson.id %}" method="POST">
+                                                                  {% csrf_token %}
+                                                                  <button type="submit" class="btn btn-danger">
+                                                                      <i class="fa-solid fa-eraser fa-lg"></i>
+                                                                  </button>
+                                                               </form>
+                                                              </td>
+                                                            </tr>
+                                                          {% endfor %}
+                                                        </tbody>
+                                                      </table>
+                                                  </strong></li>
                                                   </ul>
                                                 </div>
                                                 <div class="modal-footer">
@@ -110,6 +139,8 @@
                                     </td>
                                 </tr>
                             {% endfor %}
+
+                            <!-- STUDENTS WITHOUT ADDED LESSONS -->
                             {% for student in students_no_lessons %}
                                 <tr>
                                     <td>{{ student.student_number }}</td>

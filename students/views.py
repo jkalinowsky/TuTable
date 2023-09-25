@@ -1,4 +1,4 @@
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
 from django.urls import reverse
 
@@ -94,3 +94,27 @@ def addLesson(request, id):
 
     return render(request, 'students/add_lesson.html', {'form': form, 'student': student})
 
+def editLesson(request, s_id, l_id):
+    student = Student.objects.get(pk=s_id)
+    lesson = Lesson.objects.get(pk=l_id)
+
+    if request.method == 'POST':
+        form = LessonForm(request.POST, instance=lesson)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('index'))
+    else:
+        form = LessonForm(instance=lesson)
+
+    return render(request, 'students/edit_lesson.html', {
+        'form': form,
+        'student': student,
+        'lesson': lesson,
+    })
+
+def deleteLesson(request, id):
+    lesson = Lesson.objects.get(pk=id)
+    if request.method == 'POST':
+        lesson.delete()
+        return HttpResponseRedirect(reverse('index'))
+    return HttpResponseRedirect(reverse('index'))
