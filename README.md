@@ -54,3 +54,18 @@ python manage.py runserver
 ```
 2. Acces the TuTable web application in your web browser at: http://127.0.0.1:8000/.
 3. Begin managing your students and lessons with TuTable.
+
+## Troubleshooting
+- If you encounter any issues during installation or while running the project, please check that you have followed the steps correctly.
+- If you come across specific problems related to the application or discover any bugs, please open an issue in this repository and provide details about the issue you encountered.
+
+## Contributing
+If you would like to contribute to this project, feel free to fork this repository, make your changes, and submit a pull request. We welcome enhancements, bug fixes, and new features.
+
+## License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Acknowledgments
+- TuTable was developed to simplify student management system in a tutoring context, utilizing the Django framework.
+
+# Enjoy using TuTable for your student management needs! 📚👩‍🏫👨‍🏫
